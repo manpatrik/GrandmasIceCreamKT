@@ -6,7 +6,10 @@ import org.koin.core.context.startKoin
 import org.koin.dsl.module
 
 val appModule = module {
-    factory<IceCreamsPresenterInterface> { IceCreamsPresenter() }
+    factory<IceCreamsPresenterInterface> { IceCreamsPresenter(get(), get())}
+    factory<CartPresenterInterface> { CartPresenter(get()) }
+    single { Cart() }
+    factory { androidContext().resources }
 }
 
 class App : Application() {

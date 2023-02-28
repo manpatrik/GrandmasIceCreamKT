@@ -12,13 +12,12 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import java.net.URL
 
-class IceCreamItemAdapter(private val context: Context, iceCreams: List<IceCream>) :
+class IceCreamItemAdapter(
+    private val context: Context,
+    val iceCreams: List<IceCream>,
+    private val presenter: IceCreamsPresenterInterface
+) :
     RecyclerView.Adapter<IceCreamItemAdapter.ViewHolder>() {
-    private val iceCreams: List<IceCream>
-
-    init {
-        this.iceCreams = iceCreams
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
@@ -77,15 +76,9 @@ class IceCreamItemAdapter(private val context: Context, iceCreams: List<IceCream
                 }
             }
             loadImageThread.start()
-//            toCartButton.setOnClickListener { view: View? ->
-//                IceCreamsAtivity.cartItems.add(
-//                    CartItem(
-//                        iceCream,
-//                        ArrayList<E>(IceCreamsAtivity.requiredExtraFirstItemIds)
-//                    )
-//                )
-//                (context as IceCreamsAtivity).setCartPcs()
-//            }
+            toCartButton.setOnClickListener { view: View? ->
+                presenter.addCartItem(CartItem(iceCream, mutableListOf()))
+            }
         }
     }
 }
