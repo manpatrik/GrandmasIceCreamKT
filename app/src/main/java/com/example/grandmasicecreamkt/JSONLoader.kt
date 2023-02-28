@@ -108,7 +108,7 @@ object JSONLoader {
 
     fun loadIceCreamsFromJson(activity: Activity?) /*: List<IceCream>?*/ {
         val iceCreamsString = loadJSON(URL("https://raw.githubusercontent.com/udemx/hr-resources/master/icecreams.json"))
-            print(iceCreamsString)
+        print(iceCreamsString)
         print("valami")
 
 //        return try {

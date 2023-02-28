@@ -1,7 +1,10 @@
 package com.example.grandmasicecreamkt
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.AttributeSet
+import android.view.View
 import com.example.grandmasicecreamkt.databinding.ActivityIceCreamsBinding
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.getViewModel
@@ -19,9 +22,8 @@ class IceCreamsActivity : AppCompatActivity() {
             binding = it
             setContentView(it.root)
         }
+        print(presenter.proba("Proba"))
 
-        setSupportActionBar(binding.toolbar)
-        presenter.proba()
 
 //        val iceCreamItemAdapter = IceCreamItemAdapter(this, )
 //        binding.iceCreamsRecyclerView.adapter
