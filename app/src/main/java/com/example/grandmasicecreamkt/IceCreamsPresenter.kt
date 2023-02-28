@@ -1,12 +1,22 @@
 package com.example.grandmasicecreamkt
 
+import android.view.View
+
 interface IceCreamsPresenterInterface {
-    fun proba(str: String): String
+    fun getIceCreams(): ArrayList<IceCream>
 }
 
 class IceCreamsPresenter() : IceCreamsPresenterInterface {
-    override fun proba(str: String): String {
-        return str
+    override fun getIceCreams(): ArrayList<IceCream> {
+        //val iceCreamsFromJSON = JSONLoader.loadIceCreamsFromJson()
+
+        val iceCreams = ArrayList<IceCream>()
+        val iceCream = IceCream(1,"vanilia", IceCream.Status.AVAILABLE, "")
+        iceCreams.add(iceCream)
+        iceCreams.add(iceCream)
+        iceCreams.add(iceCream)
+        return iceCreams
     }
+
 
 }

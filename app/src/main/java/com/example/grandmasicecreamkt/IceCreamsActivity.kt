@@ -1,13 +1,10 @@
 package com.example.grandmasicecreamkt
 
-import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.AttributeSet
-import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.grandmasicecreamkt.databinding.ActivityIceCreamsBinding
 import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 class IceCreamsActivity : AppCompatActivity() {
 
@@ -22,16 +19,17 @@ class IceCreamsActivity : AppCompatActivity() {
             binding = it
             setContentView(it.root)
         }
-        print(presenter.proba("Proba"))
 
-
-//        val iceCreamItemAdapter = IceCreamItemAdapter(this, )
-//        binding.iceCreamsRecyclerView.adapter
-
-//        val thread = Thread{
-//            print(JSONLoader.loadIceCreamsFromJson(this))
-//        }
-//        thread.start()
+//        val iceCreams = ArrayList<IceCream>()
+//        val iceCream = IceCream(1,"vanilia", IceCream.Status.AVAILABLE, "")
+//        iceCreams.add(iceCream)
+//        iceCreams.add(iceCream)
+//        iceCreams.add(iceCream)
+//
+        val iceCreamItemAdapter = IceCreamItemAdapter(this, presenter.getIceCreams())
+        binding.iceCreamsRecyclerView.adapter = iceCreamItemAdapter
+        binding.iceCreamsRecyclerView.setLayoutManager(LinearLayoutManager(this))
+        iceCreamItemAdapter.notifyDataSetChanged()
 
     }
 }

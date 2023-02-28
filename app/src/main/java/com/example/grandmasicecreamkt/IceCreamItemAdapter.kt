@@ -53,18 +53,18 @@ class IceCreamItemAdapter(private val context: Context, iceCreams: List<IceCream
         @SuppressLint("SetTextI18n")
         fun bindTo(iceCream: IceCream) {
             iceCreamName.setText(iceCream.name)
-            if (iceCream.status === IceCream.Status.MELTED) {
+            if (iceCream.status == IceCream.Status.MELTED) {
                 iceCreamPrice.text = "Kifogyott"
                 toCartButton.isEnabled = false
                 toCartButton.setTextColor(itemView.resources.getColor(R.color.grey))
-            } else if (iceCream.status === IceCream.Status.UNAVAILABLE) {
+            } else if (iceCream.status == IceCream.Status.UNAVAILABLE) {
                 iceCreamPrice.text = "Nem is volt"
                 toCartButton.isEnabled = false
                 toCartButton.setTextColor(itemView.resources.getColor(R.color.grey))
             }
             val loadImageThread: Thread = object : Thread() {
                 override fun run() {
-                    if (iceCream.imageUrl != null) {
+                    if (iceCream.imageUrl != "") {
                         try {
                             val newurl = URL(iceCream.imageUrl)
                             val mIcon_val =
