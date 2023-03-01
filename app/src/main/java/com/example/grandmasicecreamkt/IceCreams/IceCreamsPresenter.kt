@@ -1,15 +1,14 @@
 package com.example.grandmasicecreamkt
 
 import android.content.res.Resources
-import android.view.View
-import org.koin.java.KoinJavaComponent.inject
+import com.example.grandmasicecreamkt.IceCreams.IceCreamFragmentInterFace
+import com.example.grandmasicecreamkt.IceCreams.IceCreamsPresenterInterface
 
-interface IceCreamsPresenterInterface {
-    fun getIceCreams(): ArrayList<IceCream>
-    fun addCartItem(cartItem: CartItem)
-}
-
-class IceCreamsPresenter(val cart: Cart, val resources: Resources) : IceCreamsPresenterInterface {
+class IceCreamsPresenter(
+    override val view: IceCreamFragmentInterFace,
+    val cart: Cart,
+    val resources: Resources
+    ) : IceCreamsPresenterInterface {
 
 
     override fun getIceCreams(): ArrayList<IceCream> {

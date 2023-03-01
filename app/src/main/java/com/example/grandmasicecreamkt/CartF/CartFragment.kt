@@ -1,15 +1,18 @@
-package com.example.grandmasicecreamkt
+package com.example.grandmasicecreamkt.CartF
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import com.example.grandmasicecreamkt.*
 import com.example.grandmasicecreamkt.databinding.ActivityCartBinding
 import org.koin.android.ext.android.inject
 
-class CartActivity : AppCompatActivity(){
+class CartFragment : Fragment(){
 
     var shownExtrasLayout: LinearLayout? = null
     var shownExtrasCartItemLayout: LinearLayout? = null
@@ -20,28 +23,30 @@ class CartActivity : AppCompatActivity(){
     lateinit var binding: ActivityCartBinding;
     private val presenter: CartPresenterInterface by inject()
 
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View? = ActivityCartBinding.inflate(inflater, container, false).apply {
+        binding = this
+    }.root
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        ActivityCartBinding.inflate(layoutInflater).also {
-            binding = it
-            setContentView(it.root)
+        //setSupportActionBar(binding.toolbar)
+        //supportActionBar?.setDisplayShowTitleEnabled(false)
 
-            setSupportActionBar(binding.toolbar)
-            supportActionBar?.setDisplayShowTitleEnabled(false)
+        binding.apply {
+            showCart()
         }
-
-        showCart()
     }
 
     private fun showCart() {
         for (cartItem in presenter.getCartItems()) { // presenter.getCartItems()
-            val cartItemLayoutWithRemove = LinearLayout(this)
+            val cartItemLayoutWithRemove = LinearLayout(context)
             cartItemLayoutWithRemove.orientation = LinearLayout.HORIZONTAL
-            val removeButton = ImageButton(this)
+            val removeButton = ImageButton(context)
             removeButton.setImageResource(R.drawable.ic_delete)
             cartItemLayoutWithRemove.addView(removeButton)
-            val cartItemLayout = LinearLayout(this)
+            val cartItemLayout = LinearLayout(context)
             cartItemLayout.orientation = LinearLayout.VERTICAL
             cartItemLayout.setBackgroundColor(resources.getColor(R.color.red))
             val layoutParams = LinearLayout.LayoutParams(
@@ -51,7 +56,7 @@ class CartActivity : AppCompatActivity(){
             layoutParams.setMargins(0, 0, 0, 10)
             cartItemLayout.layoutParams = layoutParams
             cartItemLayout.setPadding(10, 10, 10, 10)
-            val nameTextView = TextView(this)
+            val nameTextView = TextView(context)
             nameTextView.setText(cartItem.iceCream.name)
             nameTextView.textSize = 20f
             cartItemLayout.addView(nameTextView)
@@ -131,9 +136,9 @@ class CartActivity : AppCompatActivity(){
 
     @SuppressLint("SetTextI18n")
     private fun showRequiredExtras(extra: Extra, cartItem: CartItem?): View {
-        val radioGroup = RadioGroup(this)
+        val radioGroup = RadioGroup(context)
         for (item in extra.getItems()) {
-            val radioButton = RadioButton(this)
+            val radioButton = RadioButton(context)
             radioButton.setTextColor(resources.getColor(R.color.white))
             radioButton.setText(item.price.toString() + "€ " + item.name)
             radioButton.tag = item.id
@@ -146,8 +151,8 @@ class CartActivity : AppCompatActivity(){
         }
         radioGroup.setOnCheckedChangeListener { radioGroupView: RadioGroup, selectedId: Int ->
             val cartItemId: Int = presenter.getCartItems().indexOf(cartItem)
-            val selectedTag =
-                findViewById<View>(selectedId).tag as Long
+            val selectedTag = 0L
+//                findViewById<View>(selectedId).tag as Long
             for (j in 0 until radioGroupView.childCount) {
                 if (radioGroupView.getChildAt(j).tag !== selectedTag) {
                     presenter.getCartItems().get(cartItemId)
@@ -162,7 +167,7 @@ class CartActivity : AppCompatActivity(){
 
     @SuppressLint("SetTextI18n")
     private fun showExtrasList(cartItem: CartItem?): LinearLayout {
-        val extrasListLayout = LinearLayout(this)
+        val extrasListLayout = LinearLayout(context)
         extrasListLayout.orientation = LinearLayout.VERTICAL
         extrasListLayout.setPadding(40, 0, 0, 0)
         if (cartItem != null) {
@@ -183,7 +188,7 @@ class CartActivity : AppCompatActivity(){
 //                }
 
                 if (item != null) {
-                    val itemNameText = TextView(this)
+                    val itemNameText = TextView(context)
                     itemNameText.text = "- " + item?.name
                     extrasListLayout.addView(itemNameText)
                 }
@@ -194,11 +199,11 @@ class CartActivity : AppCompatActivity(){
 
     @SuppressLint("SetTextI18n")
     private fun showExtras(cartItem: CartItem?): LinearLayout {
-        val extrasLayout = LinearLayout(this)
+        val extrasLayout = LinearLayout(context)
         extrasLayout.orientation = LinearLayout.VERTICAL
         val extras: List<Extra> = presenter.getExtras()
         for (extra in extras) {
-            val extraLayout = LinearLayout(this)
+            val extraLayout = LinearLayout(context)
             extraLayout.orientation = LinearLayout.VERTICAL
             extraLayout.setBackgroundColor(resources.getColor(R.color.red))
             val layoutParams = LinearLayout.LayoutParams(
@@ -207,7 +212,7 @@ class CartActivity : AppCompatActivity(){
             )
             layoutParams.setMargins(0, 20, 0, 0)
             extraLayout.layoutParams = layoutParams
-            val typeText = TextView(this)
+            val typeText = TextView(context)
             typeText.setTextColor(resources.getColor(R.color.white))
             typeText.setPadding(20, 20, 10, 10)
             extraLayout.addView(typeText)
@@ -227,7 +232,7 @@ class CartActivity : AppCompatActivity(){
 
     @SuppressLint("SetTextI18n")
     private fun showOptionalExtra(item: Item, cartItem: CartItem?): View? {
-        val checkBox = CheckBox(this)
+        val checkBox = CheckBox(context)
         checkBox.setTextColor(resources.getColor(R.color.white))
         checkBox.setText(item.price.toString() + "€ " + item.name)
         if (presenter.getCartItems().get(presenter.getCartItems().indexOf(cartItem))

@@ -1,5 +1,6 @@
 package com.example.grandmasicecreamkt
 
+
 interface CartPresenterInterface{
     fun getCartItems(): List<CartItem>
     fun removeCartItem(cartItem: CartItem)
