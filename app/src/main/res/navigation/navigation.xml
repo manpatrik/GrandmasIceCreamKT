@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation"
+    app:startDestination="@id/iceCreamsActivity">
+
+    <fragment
+        android:id="@+id/iceCreamsActivity"
+        android:name="com.example.grandmasicecreamkt.IceCreams.IceCreamsFragment"
+        android:label="IceCreamsActivity" >
+        <action
+            android:id="@+id/action_iceCreamsActivity_to_cartFragment"
+            app:destination="@id/cartFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/cartFragment"
+        android:name="com.example.grandmasicecreamkt.CartF.CartFragment"
+        android:label="activity_cart"
+        tools:layout="@layout/activity_cart" />
+</navigation>
