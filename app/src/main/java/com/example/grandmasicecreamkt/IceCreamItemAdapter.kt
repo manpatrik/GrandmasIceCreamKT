@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 import com.example.grandmasicecreamkt.IceCreams.IceCreamsPresenterInterface
 import java.net.URL
 
@@ -62,21 +63,9 @@ class IceCreamItemAdapter(
                 toCartButton.isEnabled = false
                 toCartButton.setTextColor(itemView.resources.getColor(R.color.grey))
             }
-            val loadImageThread: Thread = object : Thread() {
-                override fun run() {
-                    if (iceCream.imageUrl != "") {
-                        try {
-                            val newurl = URL(iceCream.imageUrl)
-                            val mIcon_val =
-                                BitmapFactory.decodeStream(newurl.openConnection().getInputStream())
-                            iceCreamImage.setImageBitmap(mIcon_val)
-                        } catch (e: Exception) {
-                            println("ERROR: $e")
-                        }
-                    }
-                }
-            }
-            loadImageThread.start()
+            
+            iceCreamImage.load(iceCream.imageUrl)
+
             toCartButton.setOnClickListener { view: View? ->
                 presenter.addCartItem(CartItem(iceCream, mutableListOf()))
             }
