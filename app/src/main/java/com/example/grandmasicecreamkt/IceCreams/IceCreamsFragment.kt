@@ -44,7 +44,7 @@ class IceCreamsFragment : Fragment(), IceCreamFragmentInterFace {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.cartMenu) {
-            findNavController().navigate(R.id.action_iceCreamsActivity_to_cartFragment)
+            findNavController().navigate(IceCreamsFragmentDirections.actionIceCreamsActivityToCartFragment())
         }
         return true
     }

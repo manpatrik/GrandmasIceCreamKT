@@ -30,13 +30,7 @@ class CartFragment : Fragment(){
     }.root
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        //setSupportActionBar(binding.toolbar)
-        //supportActionBar?.setDisplayShowTitleEnabled(false)
-
-        binding.apply {
-            showCart()
-        }
+        showCart()
     }
 
     private fun showCart() {
