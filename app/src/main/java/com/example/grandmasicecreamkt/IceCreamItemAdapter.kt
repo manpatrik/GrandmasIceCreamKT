@@ -12,12 +12,13 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.grandmasicecreamkt.IceCreams.IceCreamsPresenterInterface
+import com.example.grandmasicecreamkt.IceCreams.IceCreamsViewModel
 import java.net.URL
 
 class IceCreamItemAdapter(
     private val context: Context,
     val iceCreams: List<IceCream>,
-    private val presenter: IceCreamsPresenterInterface
+    private val viewModel: IceCreamsViewModel
 ) :
     RecyclerView.Adapter<IceCreamItemAdapter.ViewHolder>() {
 
@@ -67,7 +68,7 @@ class IceCreamItemAdapter(
             iceCreamImage.load(iceCream.imageUrl)
 
             toCartButton.setOnClickListener { view: View? ->
-                presenter.addCartItem(CartItem(iceCream, mutableListOf()))
+                viewModel.addCartItem(CartItem(iceCream, mutableListOf()))
             }
         }
     }

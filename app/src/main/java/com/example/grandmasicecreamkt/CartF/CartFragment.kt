@@ -8,9 +8,11 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.example.grandmasicecreamkt.*
 import com.example.grandmasicecreamkt.databinding.ActivityCartBinding
 import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class CartFragment : Fragment(){
 
@@ -21,7 +23,8 @@ class CartFragment : Fragment(){
     var hiddenExtrasListCartItem: CartItem? = null
 
     lateinit var binding: ActivityCartBinding;
-    private val presenter: CartPresenterInterface by inject()
+    //private val presenter: CartPresenterInterface by inject()
+    private val viewModel: CartViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -30,11 +33,12 @@ class CartFragment : Fragment(){
     }.root
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         showCart()
     }
 
     private fun showCart() {
-        for (cartItem in presenter.getCartItems()) { // presenter.getCartItems()
+        for (cartItem in viewModel.getCartItems()) { // presenter.getCartItems()
             val cartItemLayoutWithRemove = LinearLayout(context)
             cartItemLayoutWithRemove.orientation = LinearLayout.HORIZONTAL
             val removeButton = ImageButton(context)
@@ -90,7 +94,7 @@ class CartFragment : Fragment(){
                 hiddenExtrasListLayout = null
                 hiddenExtrasListCartItem = null
             }
-            presenter.removeCartItem(cartItem) // presenter.getCartItems().remove(cartItem)
+            viewModel.removeCartItem(cartItem) // presenter.getCartItems().remove(cartItem)
             binding.cartLayout.removeView(cartItemLayoutWithRemove)
         }
     }
@@ -139,20 +143,20 @@ class CartFragment : Fragment(){
             radioGroup.addView(radioButton)
             // presenter.getCartItems().get(presenter.getCartItems().indexOf(cartItem))
             //                    .getExtraItemIds().contains(item.id)
-            if (presenter.isCartItemContainExtraItem(cartItem, item.id)) {
+            if (viewModel.isCartItemContainExtraItem(cartItem, item.id)) {
                 radioGroup.check(radioButton.id)
             }
         }
         radioGroup.setOnCheckedChangeListener { radioGroupView: RadioGroup, selectedId: Int ->
-            val cartItemId: Int = presenter.getCartItems().indexOf(cartItem)
+            val cartItemId: Int = viewModel.getCartItems().indexOf(cartItem)
             val selectedTag = 0L
 //                findViewById<View>(selectedId).tag as Long
             for (j in 0 until radioGroupView.childCount) {
                 if (radioGroupView.getChildAt(j).tag !== selectedTag) {
-                    presenter.getCartItems().get(cartItemId)
+                    viewModel.getCartItems().get(cartItemId)
                         .removeExtraItemId(radioGroupView.getChildAt(j).tag as Long)
                 } else {
-                    presenter.getCartItems().get(cartItemId).addExtraItemIds(selectedTag)
+                    viewModel.getCartItems().get(cartItemId).addExtraItemIds(selectedTag)
                 }
             }
         }
@@ -167,7 +171,7 @@ class CartFragment : Fragment(){
         if (cartItem != null) {
             for (itemId in cartItem.extraItemIds) {
                 var item: Item? = null
-                presenter.getExtras().forEach {
+                viewModel.getExtras().forEach {
                     item = it.getItems().find {
                         item -> item.id == itemId
                     }
@@ -195,7 +199,7 @@ class CartFragment : Fragment(){
     private fun showExtras(cartItem: CartItem?): LinearLayout {
         val extrasLayout = LinearLayout(context)
         extrasLayout.orientation = LinearLayout.VERTICAL
-        val extras: List<Extra> = presenter.getExtras()
+        val extras: List<Extra> = viewModel.getExtras()
         for (extra in extras) {
             val extraLayout = LinearLayout(context)
             extraLayout.orientation = LinearLayout.VERTICAL
@@ -229,14 +233,14 @@ class CartFragment : Fragment(){
         val checkBox = CheckBox(context)
         checkBox.setTextColor(resources.getColor(R.color.white))
         checkBox.setText(item.price.toString() + "€ " + item.name)
-        if (presenter.getCartItems().get(presenter.getCartItems().indexOf(cartItem))
+        if (viewModel.getCartItems().get(viewModel.getCartItems().indexOf(cartItem))
                 .extraItemIds.contains(item.id)
         ) {
             checkBox.isChecked = true
         }
         checkBox.setOnCheckedChangeListener { view: CompoundButton?, isChecked: Boolean ->
-            presenter.getCartItems().get(
-                presenter.getCartItems().indexOf(cartItem)
+            viewModel.getCartItems().get(
+                viewModel.getCartItems().indexOf(cartItem)
             ).addOrRemoveExtraId(item.id, isChecked)
         }
         return checkBox

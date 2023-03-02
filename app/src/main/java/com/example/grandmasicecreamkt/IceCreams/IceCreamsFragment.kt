@@ -19,7 +19,7 @@ import org.koin.core.parameter.parametersOf
 class IceCreamsFragment : Fragment(), IceCreamFragmentInterFace {
 
     lateinit var binding: ActivityIceCreamsBinding;
-    private val presenter: IceCreamsPresenterInterface by inject() { parametersOf(this) }
+    //private val presenter: IceCreamsPresenterInterface by inject() { parametersOf(this) }
     private val viewModel: IceCreamsViewModel by viewModel()
 
 
@@ -35,11 +35,15 @@ class IceCreamsFragment : Fragment(), IceCreamFragmentInterFace {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        val iceCreamItemAdapter = IceCreamItemAdapter(view.context, presenter.getIceCreams(), presenter)
-        binding.iceCreamsRecyclerView.adapter = iceCreamItemAdapter
-        binding.iceCreamsRecyclerView.setLayoutManager(LinearLayoutManager(view.context))
-        iceCreamItemAdapter.notifyDataSetChanged()
+        viewModel.iceCreams.observe(viewLifecycleOwner) {
+            if (it is Resource.Success){
+                println("ALMA "+ it.data.size)
+                val iceCreamItemAdapter = IceCreamItemAdapter(view.context, it.data, viewModel)
+                binding.iceCreamsRecyclerView.adapter = iceCreamItemAdapter
+                binding.iceCreamsRecyclerView.setLayoutManager(LinearLayoutManager(view.context))
+                iceCreamItemAdapter.notifyDataSetChanged()
+            }
+        }
     }
 
 

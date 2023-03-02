@@ -1,10 +1,13 @@
 package com.example.grandmasicecreamkt.di
 
 import com.example.grandmasicecreamkt.*
+import com.example.grandmasicecreamkt.CartF.CartViewModel
 import com.example.grandmasicecreamkt.IceCreams.IceCreamFragmentInterFace
 import com.example.grandmasicecreamkt.IceCreams.IceCreamsPresenterInterface
 import com.example.grandmasicecreamkt.IceCreams.IceCreamsViewModel
-import com.example.grandmasicecreamkt.network.HTTPRequests
+import com.example.grandmasicecreamkt.network.APIClient
+import com.example.grandmasicecreamkt.network.APIInterface
+import com.example.grandmasicecreamkt.network.IceCreamRepository
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -17,9 +20,12 @@ val appModule = module {
 }
 
 val networkModule = module {
-    single { HTTPRequests() }
+    single { APIClient() }
+    single<APIInterface> { get<APIClient>().createApi() }
+    single { IceCreamRepository(get()) }
 }
 
 val viewModelModule = module {
-    viewModel { IceCreamsViewModel(get()) }
+    viewModel { IceCreamsViewModel(get(), get()) }
+    viewModel { CartViewModel(get()) }
 }
