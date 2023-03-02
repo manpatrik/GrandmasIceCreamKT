@@ -10,7 +10,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.grandmasicecreamkt.*
 import com.example.grandmasicecreamkt.CartF.CartFragment
 import com.example.grandmasicecreamkt.databinding.ActivityIceCreamsBinding
+import com.example.grandmasicecreamkt.di.viewModelModule
 import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
 
@@ -18,6 +20,7 @@ class IceCreamsFragment : Fragment(), IceCreamFragmentInterFace {
 
     lateinit var binding: ActivityIceCreamsBinding;
     private val presenter: IceCreamsPresenterInterface by inject() { parametersOf(this) }
+    private val viewModel: IceCreamsViewModel by viewModel()
 
 
     override fun onCreateView(
@@ -28,8 +31,6 @@ class IceCreamsFragment : Fragment(), IceCreamFragmentInterFace {
         setHasOptionsMenu(true)
         (activity as AppCompatActivity?)?.setSupportActionBar(binding.toolbar)
         (activity as AppCompatActivity?)?.setTitle("")
-//        setSupportActionBar(binding.toolbar)
-//        supportActionBar?.setDisplayShowTitleEnabled(false)
     }.root
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
