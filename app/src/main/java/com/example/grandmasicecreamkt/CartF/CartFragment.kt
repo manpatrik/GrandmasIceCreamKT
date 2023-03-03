@@ -6,12 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import com.example.grandmasicecreamkt.*
 import com.example.grandmasicecreamkt.databinding.ActivityCartBinding
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class CartFragment : Fragment(){
@@ -34,11 +31,13 @@ class CartFragment : Fragment(){
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        showCart()
+        viewModel.cartItems.observe(viewLifecycleOwner){
+            showCart(it)
+        }
     }
 
-    private fun showCart() {
-        for (cartItem in viewModel.getCartItems()) { // presenter.getCartItems()
+    private fun showCart(cartItems: List<CartItem>) {
+        for (cartItem in cartItems) { // presenter.getCartItems()
             val cartItemLayoutWithRemove = LinearLayout(context)
             cartItemLayoutWithRemove.orientation = LinearLayout.HORIZONTAL
             val removeButton = ImageButton(context)
@@ -64,7 +63,8 @@ class CartFragment : Fragment(){
                 cartItemLayoutOnClikListener(
                     cartItemLayout,
                     extrasListLayout,
-                    cartItem
+                    cartItem,
+                    cartItems
                 )
             )
             cartItemLayoutWithRemove.addView(cartItemLayout)
@@ -102,7 +102,8 @@ class CartFragment : Fragment(){
     private fun cartItemLayoutOnClikListener(
         cartItemLayout: LinearLayout,
         extrasListLayout: LinearLayout,
-        cartItem: CartItem
+        cartItem: CartItem,
+        cartItems: List<CartItem>
     ): View.OnClickListener {
         return View.OnClickListener { view: View? ->
             if (shownExtrasCartItemLayout === cartItemLayout) {
@@ -124,7 +125,7 @@ class CartFragment : Fragment(){
                 extrasListLayout.removeAllViews()
                 hiddenExtrasListLayout = extrasListLayout
                 hiddenExtrasListCartItem = cartItem
-                val extrasView: LinearLayout = showExtras(cartItem)
+                val extrasView: LinearLayout = showExtras(cartItem, cartItems)
                 cartItemLayout.addView(extrasView)
                 shownExtrasLayout = extrasView
                 shownExtrasCartItemLayout = cartItemLayout
@@ -133,7 +134,7 @@ class CartFragment : Fragment(){
     }
 
     @SuppressLint("SetTextI18n")
-    private fun showRequiredExtras(extra: Extra, cartItem: CartItem?): View {
+    private fun showRequiredExtras(extra: Extra, cartItem: CartItem?, cartItems: List<CartItem>): View {
         val radioGroup = RadioGroup(context)
         for (item in extra.getItems()) {
             val radioButton = RadioButton(context)
@@ -148,15 +149,15 @@ class CartFragment : Fragment(){
             }
         }
         radioGroup.setOnCheckedChangeListener { radioGroupView: RadioGroup, selectedId: Int ->
-            val cartItemId: Int = viewModel.getCartItems().indexOf(cartItem)
+            val cartItemId: Int = cartItems.indexOf(cartItem)
             val selectedTag = 0L
 //                findViewById<View>(selectedId).tag as Long
             for (j in 0 until radioGroupView.childCount) {
                 if (radioGroupView.getChildAt(j).tag !== selectedTag) {
-                    viewModel.getCartItems().get(cartItemId)
+                    cartItems.get(cartItemId)
                         .removeExtraItemId(radioGroupView.getChildAt(j).tag as Long)
                 } else {
-                    viewModel.getCartItems().get(cartItemId).addExtraItemIds(selectedTag)
+                    cartItems.get(cartItemId).addExtraItemIds(selectedTag)
                 }
             }
         }
@@ -196,7 +197,7 @@ class CartFragment : Fragment(){
     }
 
     @SuppressLint("SetTextI18n")
-    private fun showExtras(cartItem: CartItem?): LinearLayout {
+    private fun showExtras(cartItem: CartItem?, cartItems: List<CartItem>): LinearLayout {
         val extrasLayout = LinearLayout(context)
         extrasLayout.orientation = LinearLayout.VERTICAL
         val extras: List<Extra> = viewModel.getExtras()
@@ -216,11 +217,11 @@ class CartFragment : Fragment(){
             extraLayout.addView(typeText)
             if (extra.required) {
                 typeText.setText(extra.type + " *")
-                extraLayout.addView(showRequiredExtras(extra, cartItem))
+                extraLayout.addView(showRequiredExtras(extra, cartItem, cartItems))
             } else {
                 typeText.setText(extra.type)
                 for (item in extra.getItems()) {
-                    extraLayout.addView(showOptionalExtra(item, cartItem))
+                    extraLayout.addView(showOptionalExtra(item, cartItem, cartItems))
                 }
             }
             extrasLayout.addView(extraLayout)
@@ -229,18 +230,18 @@ class CartFragment : Fragment(){
     }
 
     @SuppressLint("SetTextI18n")
-    private fun showOptionalExtra(item: Item, cartItem: CartItem?): View? {
+    private fun showOptionalExtra(item: Item, cartItem: CartItem?, cartItems: List<CartItem>): View? {
         val checkBox = CheckBox(context)
         checkBox.setTextColor(resources.getColor(R.color.white))
         checkBox.setText(item.price.toString() + "€ " + item.name)
-        if (viewModel.getCartItems().get(viewModel.getCartItems().indexOf(cartItem))
+        if (cartItems.get(cartItems.indexOf(cartItem))
                 .extraItemIds.contains(item.id)
         ) {
             checkBox.isChecked = true
         }
         checkBox.setOnCheckedChangeListener { view: CompoundButton?, isChecked: Boolean ->
-            viewModel.getCartItems().get(
-                viewModel.getCartItems().indexOf(cartItem)
+            cartItems.get(
+                cartItems.indexOf(cartItem)
             ).addOrRemoveExtraId(item.id, isChecked)
         }
         return checkBox

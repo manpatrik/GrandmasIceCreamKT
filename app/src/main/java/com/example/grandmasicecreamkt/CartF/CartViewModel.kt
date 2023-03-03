@@ -15,11 +15,11 @@ class CartViewModel(val cart: Cart): ViewModel() {
         get() = _cartItems
 
     init {
-
+        getCartItems()
     }
 
-    fun getCartItems(): List<CartItem> {
-        return cart.cartItems
+    private fun getCartItems() {
+        _cartItems.value = cart.cartItems
     }
 
     fun removeCartItem(cartItem: CartItem) {

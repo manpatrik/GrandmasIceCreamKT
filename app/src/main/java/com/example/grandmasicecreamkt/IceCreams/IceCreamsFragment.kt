@@ -37,7 +37,6 @@ class IceCreamsFragment : Fragment(), IceCreamFragmentInterFace {
         super.onViewCreated(view, savedInstanceState)
         viewModel.iceCreams.observe(viewLifecycleOwner) {
             if (it is Resource.Success){
-                println("ALMA "+ it.data.size)
                 val iceCreamItemAdapter = IceCreamItemAdapter(view.context, it.data, viewModel)
                 binding.iceCreamsRecyclerView.adapter = iceCreamItemAdapter
                 binding.iceCreamsRecyclerView.setLayoutManager(LinearLayoutManager(view.context))
