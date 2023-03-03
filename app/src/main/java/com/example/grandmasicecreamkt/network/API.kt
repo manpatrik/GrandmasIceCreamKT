@@ -1,5 +1,6 @@
 package com.example.grandmasicecreamkt.network
 
+import com.example.grandmasicecreamkt.Extra
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
@@ -28,7 +29,7 @@ interface APIInterface {
     suspend fun doGetListResources(): LoadIcecreamsResponse
 
     @GET("/udemx/hr-resources/master/extras.json")
-    suspend fun doGetExtraResources(): LoadExtrasResponse
+    suspend fun doGetExtraResources(): List<Extra>
 
     @POST("POST")
     fun sendOrder(): Call<Unit>

@@ -2,6 +2,7 @@ package com.example.grandmasicecreamkt.CartF
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +20,8 @@ class CartFragment : Fragment(){
     var hiddenExtrasListLayout: LinearLayout? = null
     var hiddenExtrasListCartItem: CartItem? = null
 
+
+
     lateinit var binding: ActivityCartBinding;
     //private val presenter: CartPresenterInterface by inject()
     private val viewModel: CartViewModel by viewModel()
@@ -31,12 +34,14 @@ class CartFragment : Fragment(){
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.cartItems.observe(viewLifecycleOwner){
-            showCart(it)
+        viewModel.cartData.observe(viewLifecycleOwner){
+            showCart(it.cartItems, it.extras)
         }
+
     }
 
-    private fun showCart(cartItems: List<CartItem>) {
+    private fun showCart(cartItems: List<CartItem>, extras: List<Extra>) {
+        binding.cartLayout.removeAllViews()
         for (cartItem in cartItems) { // presenter.getCartItems()
             val cartItemLayoutWithRemove = LinearLayout(context)
             cartItemLayoutWithRemove.orientation = LinearLayout.HORIZONTAL
@@ -57,14 +62,15 @@ class CartFragment : Fragment(){
             nameTextView.setText(cartItem.iceCream.name)
             nameTextView.textSize = 20f
             cartItemLayout.addView(nameTextView)
-            val extrasListLayout: LinearLayout = showExtrasList(cartItem)
+            val extrasListLayout: LinearLayout = showExtrasList(cartItem, extras)
             cartItemLayout.addView(extrasListLayout)
             cartItemLayout.setOnClickListener(
                 cartItemLayoutOnClikListener(
                     cartItemLayout,
                     extrasListLayout,
                     cartItem,
-                    cartItems
+                    cartItems,
+                    extras
                 )
             )
             cartItemLayoutWithRemove.addView(cartItemLayout)
@@ -73,7 +79,8 @@ class CartFragment : Fragment(){
                 removeButtonOnClickListener(
                     cartItemLayout,
                     cartItem,
-                    cartItemLayoutWithRemove
+                    cartItemLayoutWithRemove,
+                    extras
                 )
             )
         }
@@ -82,14 +89,15 @@ class CartFragment : Fragment(){
     private fun removeButtonOnClickListener(
         cartItemLayout: LinearLayout,
         cartItem: CartItem,
-        cartItemLayoutWithRemove: View
+        cartItemLayoutWithRemove: View,
+        extras: List<Extra>
     ): View.OnClickListener {
         return View.OnClickListener { view: View? ->
             if (shownExtrasCartItemLayout === cartItemLayout) {
                 shownExtrasCartItemLayout?.removeView(shownExtrasLayout)
                 shownExtrasLayout = null
                 shownExtrasCartItemLayout = null
-                val newExtrasListLayout: LinearLayout = showExtrasList(hiddenExtrasListCartItem)
+                val newExtrasListLayout: LinearLayout = showExtrasList(hiddenExtrasListCartItem, extras)
                 hiddenExtrasListLayout?.addView(newExtrasListLayout)
                 hiddenExtrasListLayout = null
                 hiddenExtrasListCartItem = null
@@ -103,21 +111,22 @@ class CartFragment : Fragment(){
         cartItemLayout: LinearLayout,
         extrasListLayout: LinearLayout,
         cartItem: CartItem,
-        cartItems: List<CartItem>
+        cartItems: List<CartItem>,
+        extras: List<Extra>
     ): View.OnClickListener {
         return View.OnClickListener { view: View? ->
             if (shownExtrasCartItemLayout === cartItemLayout) {
                 shownExtrasCartItemLayout?.removeView(shownExtrasLayout)
                 shownExtrasLayout = null
                 shownExtrasCartItemLayout = null
-                val newExtrasListLayout: LinearLayout = showExtrasList(hiddenExtrasListCartItem)
+                val newExtrasListLayout: LinearLayout = showExtrasList(hiddenExtrasListCartItem, extras)
                 hiddenExtrasListLayout?.addView(newExtrasListLayout)
                 hiddenExtrasListLayout = null
                 hiddenExtrasListCartItem = null
             } else {
                 if (shownExtrasLayout != null) {
                     shownExtrasCartItemLayout?.removeView(shownExtrasLayout)
-                    val newExtrasListLayout: LinearLayout = showExtrasList(hiddenExtrasListCartItem)
+                    val newExtrasListLayout: LinearLayout = showExtrasList(hiddenExtrasListCartItem,extras)
                     hiddenExtrasListLayout?.addView(newExtrasListLayout)
                     hiddenExtrasListLayout = null
                     hiddenExtrasListCartItem = null
@@ -125,7 +134,7 @@ class CartFragment : Fragment(){
                 extrasListLayout.removeAllViews()
                 hiddenExtrasListLayout = extrasListLayout
                 hiddenExtrasListCartItem = cartItem
-                val extrasView: LinearLayout = showExtras(cartItem, cartItems)
+                val extrasView: LinearLayout = showExtras(cartItem, cartItems, extras)
                 cartItemLayout.addView(extrasView)
                 shownExtrasLayout = extrasView
                 shownExtrasCartItemLayout = cartItemLayout
@@ -136,7 +145,7 @@ class CartFragment : Fragment(){
     @SuppressLint("SetTextI18n")
     private fun showRequiredExtras(extra: Extra, cartItem: CartItem?, cartItems: List<CartItem>): View {
         val radioGroup = RadioGroup(context)
-        for (item in extra.getItems()) {
+        for (item in extra.items) {
             val radioButton = RadioButton(context)
             radioButton.setTextColor(resources.getColor(R.color.white))
             radioButton.setText(item.price.toString() + "€ " + item.name)
@@ -165,15 +174,15 @@ class CartFragment : Fragment(){
     }
 
     @SuppressLint("SetTextI18n")
-    private fun showExtrasList(cartItem: CartItem?): LinearLayout {
+    private fun showExtrasList(cartItem: CartItem?, extras: List<Extra>): LinearLayout {
         val extrasListLayout = LinearLayout(context)
         extrasListLayout.orientation = LinearLayout.VERTICAL
         extrasListLayout.setPadding(40, 0, 0, 0)
         if (cartItem != null) {
             for (itemId in cartItem.extraItemIds) {
                 var item: Item? = null
-                viewModel.getExtras().forEach {
-                    item = it.getItems().find {
+                extras.forEach {
+                    item = it.items.find {
                         item -> item.id == itemId
                     }
                 }
@@ -197,10 +206,10 @@ class CartFragment : Fragment(){
     }
 
     @SuppressLint("SetTextI18n")
-    private fun showExtras(cartItem: CartItem?, cartItems: List<CartItem>): LinearLayout {
+    private fun showExtras(cartItem: CartItem?, cartItems: List<CartItem>, extras: List<Extra>): LinearLayout {
         val extrasLayout = LinearLayout(context)
         extrasLayout.orientation = LinearLayout.VERTICAL
-        val extras: List<Extra> = viewModel.getExtras()
+        val extras: List<Extra> = extras
         for (extra in extras) {
             val extraLayout = LinearLayout(context)
             extraLayout.orientation = LinearLayout.VERTICAL
@@ -220,7 +229,7 @@ class CartFragment : Fragment(){
                 extraLayout.addView(showRequiredExtras(extra, cartItem, cartItems))
             } else {
                 typeText.setText(extra.type)
-                for (item in extra.getItems()) {
+                for (item in extra.items) {
                     extraLayout.addView(showOptionalExtra(item, cartItem, cartItems))
                 }
             }

@@ -1,3 +1,9 @@
 package com.example.grandmasicecreamkt
 
-class Item(val id: Long, val name: String, val price: Double)
+import com.google.gson.annotations.SerializedName
+
+data class Item(
+    @SerializedName("id") val id: Long,
+    @SerializedName("name") val name: String,
+    @SerializedName("price") val price: Double
+)
