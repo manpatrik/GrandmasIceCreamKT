@@ -64,8 +64,9 @@ class IceCreamItemAdapter(
                 toCartButton.isEnabled = false
                 toCartButton.setTextColor(itemView.resources.getColor(R.color.grey))
             }
-            
-            iceCreamImage.load(iceCream.imageUrl)
+            if (iceCream.imageUrl.isNotEmpty()) {
+                iceCreamImage.load(iceCream.imageUrl)
+            }
 
             toCartButton.setOnClickListener { view: View? ->
                 viewModel.addCartItem(CartItem(iceCream, mutableListOf(1)))

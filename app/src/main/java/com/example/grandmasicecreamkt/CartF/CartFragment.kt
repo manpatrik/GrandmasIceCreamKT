@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,15 +15,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.grandmasicecreamkt.*
 import com.example.grandmasicecreamkt.databinding.ActivityCartBinding
 import com.example.grandmasicecreamkt.databinding.CartItemBinding
+import com.example.grandmasicecreamkt.di.viewModelModule
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class CartFragment : Fragment(){
-
-    var shownExtrasLayout: LinearLayout? = null
-    var shownExtrasCartItemLayout: LinearLayout? = null
-
-    var hiddenExtrasListLayout: LinearLayout? = null
-    var hiddenExtrasListCartItem: CartItem? = null
 
     lateinit var adapter:CartItemAdapter
     lateinit var binding: ActivityCartBinding;
@@ -38,30 +34,27 @@ class CartFragment : Fragment(){
         super.onViewCreated(view, savedInstanceState)
         binding.cartLayout.apply {
             this.layoutManager = LinearLayoutManager(this.context)
-            adapter = CartItemAdapter(viewModel).also {
-                this@CartFragment.adapter = it
-            }
         }
 
-        viewModel.cartData.observe(viewLifecycleOwner){
-//            showCart(it.cartItems, it.extras)
-            adapter.allExtras = it.extras
-            var cartItemsCopy = it.cartItems.toMutableList()
-            this@CartFragment.adapter.submitList(cartItemsCopy)
+        viewModel.cartData.observe(viewLifecycleOwner){data ->
+            binding.cartLayout.adapter = CartItemAdapter(viewModel, data.extras).also {
+                this@CartFragment.adapter = it
+                this@CartFragment.adapter.submitList(data.cartItems.toMutableList())
+            }
         }
     }
 
     class CartItemAdapter(
         val viewModel: CartViewModel,
-        var allExtras: List<Extra> = mutableListOf()
+        var allExtras: List<Extra>
         ) :
         ListAdapter<CartItem, CartItemAdapter.Vh>(object : DiffUtil.ItemCallback<CartItem>() {
             override fun areItemsTheSame(oldItem: CartItem, newItem: CartItem): Boolean =
-                oldItem == newItem
+                oldItem.expanded == newItem.expanded
 
             @SuppressLint("DiffUtilEquals")
             override fun areContentsTheSame(oldItem: CartItem, newItem: CartItem): Boolean =
-                oldItem == newItem
+                oldItem.expanded == newItem.expanded
         }) {
 
         override fun onCreateViewHolder(parent: ViewGroup, position: Int): Vh {
@@ -75,7 +68,7 @@ class CartFragment : Fragment(){
         }
 
         override fun onBindViewHolder(holder: Vh, position: Int) {
-            holder.bindTo(getItem(position), viewModel, allExtras)
+            holder.bindTo(getItem(position), viewModel, allExtras, )
         }
 
         class Vh(private val binding: CartItemBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -83,9 +76,9 @@ class CartFragment : Fragment(){
                 binding.apply {
                     this.iceCreamNameText.text = cartItem.iceCream.name.toString()
 
-
-                    loadExtras(binding, cartItem, allExtras)
-                    loadChosenExtras(binding.chosenExtrasLayout, cartItem, allExtras)
+                    loadExtras(binding.extrasLayout, cartItem, allExtras, viewModel)
+                    loadChosenExtras(binding.chosenExtrasLayout, cartItem, allExtras, viewModel)
+                    openCloseLogic(cartItem, binding.root, viewModel)
 
                     this.removeCartItemButton.setOnClickListener {
                         viewModel.removeCartItem(cartItem)
@@ -94,31 +87,82 @@ class CartFragment : Fragment(){
 
             }
 
-            private fun loadChosenExtras(layout: LinearLayout, cartItem: CartItem, allExtras: List<Extra>) {
-                cartItem.extraItemIds.forEach {
-                    var textView = TextView(layout.context)
-                    textView.setText("-")
+            private fun openCloseLogic(cartItem: CartItem, root: ConstraintLayout, viewModel: CartViewModel) {
+                root.setOnClickListener { view ->
+                    viewModel.changeExpandedStatus(cartItem)
                 }
             }
 
-            private fun loadExtras(binding: CartItemBinding, cartItem: CartItem, allExtras: List<Extra>) {
+            @SuppressLint("SetTextI18n")
+            private fun loadChosenExtras(
+                layout: LinearLayout,
+                cartItem: CartItem,
+                allExtras: List<Extra>,
+                viewModel: CartViewModel
+            ) {
+                layout.visibility = if (cartItem.expanded.not()) LinearLayout.VISIBLE else LinearLayout.GONE
+
+                cartItem.extraItemIds.forEach { extraItemId ->
+                    val textView = TextView(layout.context)
+                    allExtras.forEach {extra ->
+                        extra.items.find {it.id == extraItemId }?.let {
+                            textView.setText("- " + it.name)
+                        }
+                    }
+
+                    layout.addView(textView)
+                }
+            }
+
+            @SuppressLint("SetTextI18n")
+            private fun loadExtras(extrasLayout: LinearLayout, cartItem: CartItem, allExtras: List<Extra>, viewModel: CartViewModel) {
                 print("ExtrasSize"+allExtras.size)
                 for (extra in allExtras) {
+                    val typeText = TextView(extrasLayout.context)
+                    typeText.setTextColor(extrasLayout.context.resources.getColor(R.color.white))
+                    typeText.setPadding(20, 20, 10, 10)
+                    extrasLayout.addView(typeText)
+
                     if (extra.required){
-                        println(extra.items)
-                        val radioGroup = RadioGroup(binding.root.context)
+                        typeText.setText(extra.type +"*")
+                        val radioGroup = RadioGroup(extrasLayout.context)
+                        var oldSelectedTag = 0L
                         for (extraItem in extra.items) {
-                            val radioButton = RadioButton(binding.root.context)
-                            radioButton.setTextColor(binding.root.resources.getColor(R.color.white))
+                            val radioButton = RadioButton(extrasLayout.context)
+                            radioButton.setTextColor(extrasLayout.context.resources.getColor(R.color.white))
                             radioButton.setText(extraItem.price.toString() + "€ " + extraItem.name)
                             radioButton.tag = extraItem.id
                             radioGroup.addView(radioButton)
                             if (cartItem.extraItemIds.contains(extraItem.id)) {
                                 radioGroup.check(radioButton.id)
+                                oldSelectedTag = extraItem.id
                             }
                         }
-                        binding.extrasLayout.addView(radioGroup)
+
+                        radioGroup.setOnCheckedChangeListener { radioGroupView: RadioGroup, selectedId: Int ->
+                            val selectedRadioButton = extrasLayout.findViewById(selectedId) as RadioButton
+                            viewModel.addOrRemoveExtraIdfromCart(cartItem, oldSelectedTag, false)
+                            viewModel.addOrRemoveExtraIdfromCart(cartItem, selectedRadioButton.getTag() as Long, true)
+                            oldSelectedTag = selectedRadioButton.getTag() as Long
+                        }
+
+                        extrasLayout.addView(radioGroup)
+                    } else {
+                        typeText.setText(extra.type)
+                        for (extraItem in extra.items) {
+                            val checkBox = CheckBox(extrasLayout.context)
+                            checkBox.setTextColor(extrasLayout.context.resources.getColor(R.color.white))
+                            checkBox.setText(extraItem.price.toString() + "€ " + extraItem.name)
+                            if (cartItem.extraItemIds.contains(extraItem.id)) {
+                                checkBox.isChecked = true
+                            }
+                            checkBox.setOnCheckedChangeListener { view: CompoundButton?, isChecked: Boolean ->
+                                viewModel.addOrRemoveExtraIdfromCart(cartItem, extraItem.id, isChecked)
+                            }
+                            extrasLayout.addView(checkBox)
+                        }
                     }
+                    extrasLayout.visibility = if (cartItem.expanded) LinearLayout.VISIBLE else LinearLayout.GONE
                 }
             }
         }

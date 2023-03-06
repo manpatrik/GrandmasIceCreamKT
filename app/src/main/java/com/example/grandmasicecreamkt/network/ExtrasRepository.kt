@@ -7,7 +7,9 @@ import com.google.gson.annotations.SerializedName
 class ExtrasRepository(
     private val api: APIInterface
 ) {
+    var cache: List<Extra> = emptyList()
     suspend fun loadExtras(): List<Extra> {
-        return api.doGetExtraResources()
+        cache.ifEmpty { cache = api.doGetExtraResources() }
+        return cache
     }
 }

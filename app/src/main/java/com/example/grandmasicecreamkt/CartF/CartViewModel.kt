@@ -24,8 +24,7 @@ class CartViewModel(
 
     init {
         setCartItems()
-        if (cart.extras.size == 0)
-            getExtras()
+        getExtras()
     }
 
     private fun setCartItems() {
@@ -43,6 +42,23 @@ class CartViewModel(
     fun removeCartItem(cartItem: CartItem) {
         cart.cartItems.remove(cartItem)
         setCartItems()
+    }
+
+    fun addOrRemoveExtraIdfromCart(cartItem: CartItem, id: Long, checked: Boolean) {
+        cart.cartItems.find { it == cartItem }.let { it?.addOrRemoveExtraId(id, checked) }
+    }
+
+    fun changeExpandedStatus(cartItem: CartItem) {
+        cart.cartItems.find { it.expanded }?.let {
+            if (cartItem != it){
+                it.changeExpandedStatus()
+            }
+        }
+
+        cart.cartItems.find { it == cartItem }.let {
+            it?.changeExpandedStatus()
+            setCartItems()
+        }
     }
 }
 fun <T1, T2, R> LiveData<T1>.combineWith(

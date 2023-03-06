@@ -1,6 +1,6 @@
 package com.example.grandmasicecreamkt
 
-class CartItem(var iceCream: IceCream, var extraItemIds: MutableList<Long>, var extended: Boolean = false) {
+class CartItem(var iceCream: IceCream, var extraItemIds: MutableList<Long>, var expanded: Boolean = false) {
 
     fun addExtraItemIds(itemId: Long) {
         if (!extraItemIds.contains(itemId)) {
@@ -18,5 +18,9 @@ class CartItem(var iceCream: IceCream, var extraItemIds: MutableList<Long>, var 
         } else {
             removeExtraItemId(id)
         }
+    }
+
+    fun changeExpandedStatus() {
+        expanded = expanded.not()
     }
 }
