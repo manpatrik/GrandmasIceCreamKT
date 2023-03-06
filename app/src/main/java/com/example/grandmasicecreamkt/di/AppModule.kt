@@ -2,8 +2,6 @@ package com.example.grandmasicecreamkt.di
 
 import com.example.grandmasicecreamkt.*
 import com.example.grandmasicecreamkt.CartF.CartViewModel
-import com.example.grandmasicecreamkt.IceCreams.IceCreamFragmentInterFace
-import com.example.grandmasicecreamkt.IceCreams.IceCreamsPresenterInterface
 import com.example.grandmasicecreamkt.IceCreams.IceCreamsViewModel
 import com.example.grandmasicecreamkt.network.APIClient
 import com.example.grandmasicecreamkt.network.APIInterface
@@ -14,8 +12,6 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val appModule = module {
-    factory<IceCreamsPresenterInterface> { (view: IceCreamFragmentInterFace) -> IceCreamsPresenter(view, get(), get()) }
-    factory<CartPresenterInterface> { CartPresenter(get()) }
     single { Cart() }
     factory { androidContext().resources }
 }

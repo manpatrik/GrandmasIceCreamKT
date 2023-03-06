@@ -8,20 +8,13 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.grandmasicecreamkt.*
-import com.example.grandmasicecreamkt.CartF.CartFragment
 import com.example.grandmasicecreamkt.databinding.ActivityIceCreamsBinding
-import com.example.grandmasicecreamkt.di.viewModelModule
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.parameter.parametersOf
 
+class IceCreamsFragment : Fragment() {
 
-class IceCreamsFragment : Fragment(), IceCreamFragmentInterFace {
-
-    lateinit var binding: ActivityIceCreamsBinding;
-    //private val presenter: IceCreamsPresenterInterface by inject() { parametersOf(this) }
+    private lateinit var binding: ActivityIceCreamsBinding;
     private val viewModel: IceCreamsViewModel by viewModel()
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -45,15 +38,13 @@ class IceCreamsFragment : Fragment(), IceCreamFragmentInterFace {
         }
     }
 
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.cartMenu) {
             findNavController().navigate(IceCreamsFragmentDirections.actionIceCreamsActivityToCartFragment())
         }
         return true
     }
-
-
+    
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu, menu)
         val cartMenuItem = menu.findItem(R.id.cartMenu)
