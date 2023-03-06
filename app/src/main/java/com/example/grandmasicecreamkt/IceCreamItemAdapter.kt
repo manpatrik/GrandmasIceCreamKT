@@ -66,7 +66,7 @@ class IceCreamItemAdapter(
             }
 
             toCartButton.setOnClickListener { view: View? ->
-                viewModel.addCartItem(CartItem(iceCream, mutableListOf(1)))
+                viewModel.addCartItem(CartItem(iceCream))
             }
         }
     }

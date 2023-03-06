@@ -34,7 +34,6 @@ class CartViewModel(
     fun getExtras(){
         viewModelScope.launch {
             val extras = extrasRepository.loadExtras()
-            cart.extras = extras as MutableList<Extra>
             _extras.value = extras
         }
     }

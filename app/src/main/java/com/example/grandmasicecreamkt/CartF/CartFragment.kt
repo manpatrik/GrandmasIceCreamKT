@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -75,14 +76,13 @@ class CartFragment : Fragment(){
                     this.iceCreamNameText.text = cartItem.iceCream.name.toString()
 
                     loadExtras(binding.extrasLayout, cartItem, allExtras, viewModel)
-                    loadChosenExtras(binding.chosenExtrasLayout, cartItem, allExtras, viewModel)
+                    loadChosenExtras(binding.chosenExtrasLayout, cartItem, allExtras)
                     openCloseLogic(cartItem, binding.root, viewModel)
 
                     this.removeCartItemButton.setOnClickListener {
                         viewModel.removeCartItem(cartItem)
                     }
                 }
-
             }
 
             private fun openCloseLogic(cartItem: CartItem, root: ConstraintLayout, viewModel: CartViewModel) {
@@ -95,8 +95,7 @@ class CartFragment : Fragment(){
             private fun loadChosenExtras(
                 layout: LinearLayout,
                 cartItem: CartItem,
-                allExtras: List<Extra>,
-                viewModel: CartViewModel
+                allExtras: List<Extra>
             ) {
                 layout.visibility = if (cartItem.expanded.not()) LinearLayout.VISIBLE else LinearLayout.GONE
 
@@ -135,6 +134,12 @@ class CartFragment : Fragment(){
                                 radioGroup.check(radioButton.id)
                                 oldSelectedTag = extraItem.id
                             }
+                        }
+
+                        if (radioGroup.checkedRadioButtonId == -1) {
+                            val rbutton: RadioButton = (radioGroup.getChildAt(0) as RadioButton)
+                            radioGroup.check(rbutton.id)
+                            viewModel.addOrRemoveExtraIdfromCart(cartItem, rbutton.tag as Long, true)
                         }
 
                         radioGroup.setOnCheckedChangeListener { radioGroupView: RadioGroup, selectedId: Int ->
