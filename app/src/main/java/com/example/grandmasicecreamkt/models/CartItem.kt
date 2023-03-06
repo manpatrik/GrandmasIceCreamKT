@@ -1,6 +1,6 @@
 package com.example.grandmasicecreamkt
 
-class CartItem(var iceCream: IceCream, var extraItemIds: MutableList<Long>) {
+class CartItem(var iceCream: IceCream, var extraItemIds: MutableList<Long>, var extended: Boolean = false) {
 
     fun addExtraItemIds(itemId: Long) {
         if (!extraItemIds.contains(itemId)) {

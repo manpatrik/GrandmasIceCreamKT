@@ -1,6 +1,5 @@
 package com.example.grandmasicecreamkt.CartF
 
-import android.util.Log
 import androidx.lifecycle.*
 import com.example.grandmasicecreamkt.*
 import com.example.grandmasicecreamkt.network.ExtrasRepository
@@ -24,29 +23,26 @@ class CartViewModel(
     }
 
     init {
-        getCartItems()
-        getExtras()
+        setCartItems()
+        if (cart.extras.size == 0)
+            getExtras()
     }
 
-    private fun getCartItems() {
+    private fun setCartItems() {
         _cartItems.value = cart.cartItems
     }
 
     fun getExtras(){
         viewModelScope.launch {
-            _extras.value = extrasRepository.loadExtras()
+            val extras = extrasRepository.loadExtras()
+            cart.extras = extras as MutableList<Extra>
+            _extras.value = extras
         }
     }
 
     fun removeCartItem(cartItem: CartItem) {
         cart.cartItems.remove(cartItem)
-    }
-
-    fun isCartItemContainExtraItem(cartItem: CartItem?, id: Long): Boolean {
-//        cart.cartItems.find { it == cartItem }?.let { return cartItem?.extraItemIds?.contains(id) == true }
-//        return false
-        val cartItemIndex = cart.cartItems.indexOf(cartItem)
-        return cart.cartItems.get(cartItemIndex).extraItemIds.contains(id)
+        setCartItems()
     }
 }
 fun <T1, T2, R> LiveData<T1>.combineWith(
