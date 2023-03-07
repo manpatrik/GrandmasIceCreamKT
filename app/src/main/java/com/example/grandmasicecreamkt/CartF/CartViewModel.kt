@@ -2,7 +2,7 @@ package com.example.grandmasicecreamkt.CartF
 
 import androidx.lifecycle.*
 import com.example.grandmasicecreamkt.*
-import com.example.grandmasicecreamkt.network.ExtrasRepository
+import com.example.grandmasicecreamkt.repositories.ExtrasRepository
 import kotlinx.coroutines.launch
 
 class CartViewModel(

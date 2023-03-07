@@ -1,8 +1,7 @@
-package com.example.grandmasicecreamkt.network
+package com.example.grandmasicecreamkt.repositories
 
 import com.example.grandmasicecreamkt.Extra
-import com.example.grandmasicecreamkt.Item
-import com.google.gson.annotations.SerializedName
+import com.example.grandmasicecreamkt.network.APIInterface
 
 class ExtrasRepository(
     private val api: APIInterface

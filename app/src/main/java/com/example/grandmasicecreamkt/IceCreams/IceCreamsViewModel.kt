@@ -4,15 +4,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.grandmasicecreamkt.Cart
-import com.example.grandmasicecreamkt.CartItem
-import com.example.grandmasicecreamkt.IceCream
-import com.example.grandmasicecreamkt.network.IceCreamRepository
+import com.example.grandmasicecreamkt.*
+import com.example.grandmasicecreamkt.repositories.IceCreamRepository
 import kotlinx.coroutines.launch
 
 class IceCreamsViewModel (
-    val iceCreamRepository: IceCreamRepository,
-    val cart: Cart
+    private val iceCreamRepository: IceCreamRepository,
+    private val cart: Cart,
+    private val db: ICartDAO
         ) : ViewModel() {
 
     private val _iceCreams: MutableLiveData<Resource<List<IceCream>>> = MutableLiveData()
@@ -21,6 +20,12 @@ class IceCreamsViewModel (
 
     init {
         loadIceCreams()
+
+        db.insertCartItem(CartEntity(1L, mutableListOf(1L,2L,3L)))
+        db.insertCartItem(CartEntity(2L, mutableListOf(4L,5L,6L)))
+        println("alma "+db.loadAllCarts().size)
+        db.insertCartItem(CartEntity(3L, mutableListOf(4L,5L,6L)))
+        println("alma "+db.loadAllCarts().size)
     }
 
     private fun loadIceCreams() {

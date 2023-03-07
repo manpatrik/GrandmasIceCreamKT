@@ -1,6 +1,7 @@
 package com.example.grandmasicecreamkt.network
 
 import com.example.grandmasicecreamkt.Extra
+import com.example.grandmasicecreamkt.repositories.LoadIcecreamsResponse
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call

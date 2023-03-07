@@ -1,14 +1,8 @@
-package com.example.grandmasicecreamkt.network
+package com.example.grandmasicecreamkt.repositories
 
 import com.example.grandmasicecreamkt.IceCream
+import com.example.grandmasicecreamkt.network.APIInterface
 import com.google.gson.annotations.SerializedName
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Call
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.GET
-import retrofit2.http.POST
 
 
 class IceCreamRepository(
