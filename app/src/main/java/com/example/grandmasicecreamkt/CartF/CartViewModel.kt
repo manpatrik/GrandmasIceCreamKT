@@ -2,12 +2,14 @@ package com.example.grandmasicecreamkt.CartF
 
 import androidx.lifecycle.*
 import com.example.grandmasicecreamkt.*
+import com.example.grandmasicecreamkt.repositories.CartRepository
 import com.example.grandmasicecreamkt.repositories.ExtrasRepository
 import kotlinx.coroutines.launch
 
 class CartViewModel(
     val cart: Cart,
-    val extrasRepository : ExtrasRepository
+    val extrasRepository : ExtrasRepository,
+    private val cartRepository: CartRepository
 ): ViewModel() {
 
     private val _cartItems: MutableLiveData<List<CartItem>> = MutableLiveData()
@@ -39,12 +41,15 @@ class CartViewModel(
     }
 
     fun removeCartItem(cartItem: CartItem) {
-        cart.cartItems.remove(cartItem)
+        cartRepository.removeCartItem(cartItem)
         setCartItems()
     }
 
     fun addOrRemoveExtraIdfromCart(cartItem: CartItem, id: Long, checked: Boolean) {
-        cart.cartItems.find { it == cartItem }.let { it?.addOrRemoveExtraId(id, checked) }
+        cart.cartItems.find { it == cartItem }.let {
+            it?.addOrRemoveExtraId(id, checked)
+            cartRepository.updateCartItem(cartItem)
+        }
     }
 
     fun changeExpandedStatus(cartItem: CartItem) {

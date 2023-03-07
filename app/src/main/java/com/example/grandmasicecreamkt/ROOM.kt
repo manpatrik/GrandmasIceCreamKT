@@ -11,6 +11,9 @@ import org.koin.android.ext.koin.androidContext
 @Entity(tableName = "cart_table")
 data class CartEntity (
     @PrimaryKey
+    @ColumnInfo(name = "id")
+    val id: String,
+
     @ColumnInfo(name = "iceCreamId")
     val iceCreamId: Long,
 
@@ -25,6 +28,9 @@ interface ICartDAO {
     @Query("SELECT * FROM cart_table")
     fun loadAllCarts(): List<CartEntity>
 
+//    @Query("DELETE FROM cart_table WHERE id = (:id)")
+//    fun deleteCartItem(id: String)
+
     @Insert
     fun insertCartItem(cartEntity: CartEntity)
 
@@ -37,34 +43,18 @@ interface ICartDAO {
 }
 
 
-@Database(entities = [CartEntity::class], version = 1, exportSchema = true)
+@Database(entities = [CartEntity::class], version = 2, exportSchema = true)
 @TypeConverters(CartConverters::class)
 abstract class CartDatabase: RoomDatabase() {
 
     abstract fun cartDao():ICartDAO
-
-    companion object {
-        private var instance: CartDatabase? = null
-
-        @Synchronized
-        fun getInstance(ctx: Context): CartDatabase {
-            if (instance == null) {
-                instance = Room.databaseBuilder(
-                    ctx.applicationContext, CartDatabase::class.java,
-                    "cart_database"
-                )
-                    .addTypeConverter(CartConverters())
-                    .build()
-            }
-            return instance!!
-        }
-    }
+    
 }
 
-
+@ProvidedTypeConverter
 class CartConverters{
     @TypeConverter
-    fun fromLongListToStr(list: MutableList<String>): String {
+    fun fromLongListToStr(list: MutableList<Long>): String {
         return list.joinToString(";")
     }
 

@@ -8,9 +8,15 @@ import com.google.gson.annotations.SerializedName
 class IceCreamRepository(
     private val api: APIInterface
 ) {
+    var cache: List<IceCream> = emptyList()
+
     suspend fun loadIceCreams(): List<IceCream> {
-        val result: LoadIcecreamsResponse = api.doGetListResources()
-        return result.iceCreams?.map { it.toIceCream() }.orEmpty()
+        cache.ifEmpty{
+            val result: LoadIcecreamsResponse = api.doGetListResources()
+            cache= result.iceCreams?.map { it.toIceCream() }.orEmpty()
+            return cache
+        }
+        return cache
     }
 }
 

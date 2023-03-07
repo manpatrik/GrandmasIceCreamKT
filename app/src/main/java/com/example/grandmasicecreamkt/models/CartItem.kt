@@ -1,6 +1,9 @@
 package com.example.grandmasicecreamkt
 
+import java.util.*
+
 class CartItem(
+    val id: String = UUID.randomUUID().toString(),
     var iceCream: IceCream,
     var extraItemIds: MutableList<Long> = mutableListOf(),
     var expanded: Boolean = false) {
@@ -25,5 +28,9 @@ class CartItem(
 
     fun changeExpandedStatus() {
         expanded = expanded.not()
+    }
+
+    fun toCartEntity(): CartEntity {
+        return CartEntity(id, iceCream.id, extraItemIds)
     }
 }
