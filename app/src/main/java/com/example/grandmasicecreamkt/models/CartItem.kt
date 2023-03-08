@@ -1,6 +1,12 @@
 package com.example.grandmasicecreamkt
 
-class CartItem(var iceCream: IceCream, var extraItemIds: MutableList<Long>) {
+import java.util.*
+
+class CartItem(
+    val id: String = UUID.randomUUID().toString(),
+    var iceCream: IceCream,
+    var extraItemIds: MutableList<Long> = mutableListOf(),
+    var expanded: Boolean = false) {
 
     fun addExtraItemIds(itemId: Long) {
         if (!extraItemIds.contains(itemId)) {
@@ -18,5 +24,13 @@ class CartItem(var iceCream: IceCream, var extraItemIds: MutableList<Long>) {
         } else {
             removeExtraItemId(id)
         }
+    }
+
+    fun changeExpandedStatus() {
+        expanded = expanded.not()
+    }
+
+    fun toCartEntity(): CartEntity {
+        return CartEntity(id, iceCream.id, extraItemIds)
     }
 }

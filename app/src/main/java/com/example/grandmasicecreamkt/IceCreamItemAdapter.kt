@@ -2,7 +2,6 @@ package com.example.grandmasicecreamkt
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,13 +10,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import com.example.grandmasicecreamkt.IceCreams.IceCreamsPresenterInterface
-import java.net.URL
+import com.example.grandmasicecreamkt.IceCreams.IceCreamsViewModel
 
 class IceCreamItemAdapter(
     private val context: Context,
     val iceCreams: List<IceCream>,
-    private val presenter: IceCreamsPresenterInterface
+    private val viewModel: IceCreamsViewModel
 ) :
     RecyclerView.Adapter<IceCreamItemAdapter.ViewHolder>() {
 
@@ -63,11 +61,12 @@ class IceCreamItemAdapter(
                 toCartButton.isEnabled = false
                 toCartButton.setTextColor(itemView.resources.getColor(R.color.grey))
             }
-            
-            iceCreamImage.load(iceCream.imageUrl)
+            if (iceCream.imageUrl.isNotEmpty()) {
+                iceCreamImage.load(iceCream.imageUrl)
+            }
 
             toCartButton.setOnClickListener { view: View? ->
-                presenter.addCartItem(CartItem(iceCream, mutableListOf()))
+                viewModel.addCartItem(CartItem(iceCream = iceCream))
             }
         }
     }
