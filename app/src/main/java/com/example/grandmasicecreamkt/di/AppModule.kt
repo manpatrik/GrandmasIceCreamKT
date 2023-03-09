@@ -1,8 +1,5 @@
 package com.example.grandmasicecreamkt.di
 
-import android.content.Context
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import androidx.room.Room
 import com.example.grandmasicecreamkt.*
 import com.example.grandmasicecreamkt.CartF.CartViewModel
@@ -12,8 +9,6 @@ import com.example.grandmasicecreamkt.network.APIInterface
 import com.example.grandmasicecreamkt.repositories.CartRepository
 import com.example.grandmasicecreamkt.repositories.ExtrasRepository
 import com.example.grandmasicecreamkt.repositories.IceCreamRepository
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -45,10 +40,10 @@ val networkModule = module {
 val repositoryModule = module {
     single { IceCreamRepository(get()) }
     single { ExtrasRepository(get()) }
-    single { CartRepository(get(), get(), get()) }
+    single { CartRepository(get(), get()) }
 }
 
 val viewModelModule = module {
-    viewModel { IceCreamsViewModel(get(), get(), get()) }
-    viewModel { CartViewModel(get(), get(), get()) }
+    viewModel { IceCreamsViewModel(get(), get()) }
+    viewModel { CartViewModel(get(), get()) }
 }

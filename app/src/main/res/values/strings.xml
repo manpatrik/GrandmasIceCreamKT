@@ -7,4 +7,5 @@
     <string name="extrak">Extrák</string>
     <string name="rendeles">Rendelés</string>
     <string name="csillaggal_jelolt_mezo">* A csillaggal jelölt mező kitöltése kötelező!</string>
+    <string name="title_activity_compose">ComposeActivity</string>
 </resources>

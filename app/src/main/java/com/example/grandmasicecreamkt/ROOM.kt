@@ -60,11 +60,14 @@ class CartConverters{
 
     @TypeConverter
     fun fromStrToLongList(str: String): MutableList<Long> {
-        val strList = str.split(";")
-        var longList = mutableListOf<Long>()
-        strList.forEach{
-            longList.add(it.toLong())
+        if( str.isNotEmpty()){
+            val strList = str.split(";")
+            var longList = mutableListOf<Long>()
+            strList.forEach{
+                longList.add(it.toLong())
+            }
+            return longList
         }
-        return longList
+            return mutableListOf()
     }
 }

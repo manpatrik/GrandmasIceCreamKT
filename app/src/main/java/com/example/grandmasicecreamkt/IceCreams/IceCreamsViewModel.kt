@@ -1,5 +1,7 @@
 package com.example.grandmasicecreamkt.IceCreams
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,26 +13,21 @@ import kotlinx.coroutines.launch
 
 class IceCreamsViewModel (
     private val iceCreamRepository: IceCreamRepository,
-    private val cart: Cart,
     private val cartRepository: CartRepository
         ) : ViewModel() {
 
-    private val _iceCreams: MutableLiveData<Resource<List<IceCream>>> = MutableLiveData()
-    val iceCreams: LiveData<Resource<List<IceCream>>>
-        get() = _iceCreams
+    val iceCreams: MutableState<List<IceCream>> = mutableStateOf(listOf())
 
     init {
         viewModelScope.launch {
-            cart.cartItems = cartRepository.getCartItems()
+            cartRepository.loadCartItems()
         }
         loadIceCreams()
     }
 
     private fun loadIceCreams() {
         viewModelScope.launch {
-            _iceCreams.value = Resource.Loading()
-            val iceCreams = iceCreamRepository.loadIceCreams()
-            _iceCreams.value = Resource.Success(iceCreams)
+            iceCreams.value = iceCreamRepository.loadIceCreams()
         }
     }
 

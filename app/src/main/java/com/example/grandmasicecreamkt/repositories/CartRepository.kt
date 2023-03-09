@@ -1,17 +1,17 @@
 package com.example.grandmasicecreamkt.repositories
 
+import android.widget.RemoteViews.RemoteCollectionItems
 import com.example.grandmasicecreamkt.Cart
 import com.example.grandmasicecreamkt.CartItem
 import com.example.grandmasicecreamkt.ICartDAO
 
 class CartRepository(
     private val iceCreamRepository: IceCreamRepository,
-    private val dao: ICartDAO,
-    private val cart: Cart
+    private val dao: ICartDAO
 ) {
-//    val _cartItems: MutableLiveData<List<CartItem>> = MutableLiveData()
+    var cartItems: MutableList<CartItem> = mutableListOf<CartItem>()
 
-    suspend fun getCartItems(): MutableList<CartItem> {
+    suspend fun loadCartItems() {
         val cartEntities = dao.loadAllCarts()
         var cartItems: MutableList<CartItem> = mutableListOf()
         val iceCreams = iceCreamRepository.loadIceCreams()
@@ -19,16 +19,16 @@ class CartRepository(
             iceCreams.find { it.id == cartEntities.iceCreamId }?.let { iceCream ->
                 cartItems.add(CartItem(cartEntities.id, iceCream, cartEntities.extraIds)) }
         }
-        return cartItems
+        this.cartItems = cartItems
     }
 
     fun removeCartItem(cartItem: CartItem) {
-        cart.cartItems.remove(cartItem)
+        cartItems.remove(cartItem)
         dao.deleteCartItem(cartItem.toCartEntity())
     }
 
     fun addCartItem(cartItem: CartItem) {
-        cart.cartItems.add(cartItem)
+        cartItems.add(cartItem)
         dao.insertCartItem(cartItem.toCartEntity())
     }
 
